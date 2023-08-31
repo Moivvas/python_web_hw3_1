@@ -9,12 +9,15 @@ class FileSorter:
         self.source_path = Path(directory_path)
         self.extensions = set()
 
-        logging.basicConfig(filename='file_sorter.log', level=logging.INFO,
-                            format='%(asctime)s - %(levelname)s - %(message)s')
+        logging.basicConfig(
+            filename="file_sorter.log",
+            level=logging.INFO,
+            format="%(asctime)s - %(levelname)s - %(message)s",
+        )
 
     def collect_extensions(self):
         for file_path in self.source_path.rglob("*.*"):
-            if file_path.is_file() and not file_path.name.startswith('.'):
+            if file_path.is_file() and not file_path.name.startswith("."):
                 extension = file_path.suffix[1:]
                 self.extensions.add(extension)
 
@@ -39,12 +42,14 @@ class FileSorter:
         with ThreadPoolExecutor() as executor:
             futures = []
             for file_path in self.source_path.rglob("*.*"):
-                if file_path.is_file() and not file_path.name.startswith('.'):
+                if file_path.is_file() and not file_path.name.startswith("."):
                     extension = file_path.suffix[1:]
                     folder_name = extension.upper() + "_Files"
                     destination_folder = self.source_path / folder_name
 
-                    futures.append(executor.submit(self.move_file, file_path, destination_folder))
+                    futures.append(
+                        executor.submit(self.move_file, file_path, destination_folder)
+                    )
 
             for future in futures:
                 future.result()
@@ -62,7 +67,6 @@ class FileSorter:
         return True
 
     def sort(self):
-        # ...
 
         if not self.check_write_permission():
             return
@@ -74,21 +78,24 @@ class FileSorter:
             executor.submit(self.sort_files, self.source_path)
 
         self.remove_empty_folders()
-        
+
         hidden_files_present = any(
-            file_path.is_file() and file_path.name.startswith('.')
+            file_path.is_file() and file_path.name.startswith(".")
             for file_path in self.source_path.rglob("*.*")
         )
-        
+
         if hidden_files_present:
             logging.warning("Hiden files in this folder.")
 
         logging.info("Sorting is completed.")
 
+
 def main():
+    '''Gazda is a program created to sort files in a chosen directory.'''
     source_directory = input(f">>> Input folder path: ")
     sorter = FileSorter(source_directory)
     sorter.sort()
+
 
 if __name__ == "__main__":
     main()
